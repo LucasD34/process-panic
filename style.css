@@ -497,7 +497,7 @@ body {
 
 /* Estado CPU - Processo Baixo (Verde) */
 #cpu.prio-baixa {
-    --cor-pulso: #00ffcc;
+    --cor-pulso: #00ffcc; /* Define a variável para verde */
     background: rgba(0, 255, 204, 0.1);
     border: 2px solid var(--cor-pulso);
     box-shadow: 0 0 20px rgba(0, 255, 204, 0.4);
@@ -506,27 +506,20 @@ body {
 
 /* Estado CPU - Processo Médio (Amarelo) */
 #cpu.prio-media {
-    --cor-pulso: #ffff00;
+    --cor-pulso: #ffff00; /* Define a variável para amarelo */
     background: rgba(255, 255, 0, 0.1);
     border: 2px solid var(--cor-pulso);
     box-shadow: 0 0 20px rgba(255, 255, 0, 0.4);
     color: var(--cor-pulso);
 }
 
-/* Estado CPU - Processo Alto (Vermelho) */
+/* Estado CPU - Processo Alto/Crítico (Vermelho) */
 #cpu.prio-alta {
-    --cor-pulso: #ff0033;
+    --cor-pulso: #ff0033; /* Define a variável para vermelho */
     background: rgba(255, 0, 51, 0.15);
     border: 2px solid var(--cor-pulso);
     box-shadow: 0 0 25px rgba(255, 0, 51, 0.6);
     color: var(--cor-pulso);
-}
-
-/* Estado Especial para BOSS */
-#cpu.boss {
-    --cor-pulso: #ff0055;
-    background: rgba(255, 0, 85, 0.2);
-    border: 2px solid var(--cor-pulso);
 }
 
 /* Garante que o item da fila tenha espaço para animar */
@@ -1155,32 +1148,52 @@ body.vitoria-ativa {
     100% { transform: scale(1); }
 }
 
+/* Animação que usa uma variável para a cor */
 @keyframes pulsarCPU {
     0% { 
         transform: scale(1); 
         filter: brightness(1.2);
         box-shadow: 0 0 10px var(--cor-pulso);
         border-color: var(--cor-pulso);
+        opacity: 0.8;
     }
     50% { 
-        transform: scale(1.06); 
+        transform: scale(1.05); 
         filter: brightness(1.8); 
         box-shadow: 0 0 30px var(--cor-pulso), inset 0 0 15px var(--cor-pulso);
         border-color: var(--cor-pulso);
+        opacity: 1;
     }
     100% { 
         transform: scale(1); 
         filter: brightness(1.2);
         box-shadow: 0 0 10px var(--cor-pulso);
         border-color: var(--cor-pulso);
+        opacity: 0.8;
     }
 }
+
+/* Definimos a cor padrão como ciano, mas ela será sobrescrita */
+.cpu-processando {
+    --cor-pulso: #00ffcc; 
+    animation: pulsarCPU 0.6s infinite ease-in-out !important;
+    z-index: 10;
+}
+
+/* Sobrescrevemos a variável baseada na prioridade que já está no seu HTML/JS */
+#cpu.prio-baixa.cpu-processando { --cor-pulso: #00ffcc; }
+#cpu.prio-media.cpu-processando { --cor-pulso: #ffff00; }
+#cpu.prio-alta.cpu-processando  { --cor-pulso: #ff0033; }
+#cpu.boss.cpu-processando       { --cor-pulso: #ff0055; }
+
 .cpu-boss-active.cpu-processando {
     animation: pulsarBoss 0.4s infinite ease-in-out !important; /* Muito mais rápido! */
 }
 
-.cpu-processando {
-    animation: pulsarCPU 0.6s infinite ease-in-out !important;
+@keyframes pulsarBoss {
+    0% { transform: scale(1); border-color: #ff0055; box-shadow: 0 0 10px #ff0055; }
+    50% { transform: scale(1.15); border-color: #ff0055; box-shadow: 0 0 40px #ff0055, inset 0 0 20px #ff0055; }
+    100% { transform: scale(1); border-color: #ff0055; box-shadow: 0 0 10px #ff0055; }
 }
 
 /* --- 📱 AJUSTE FINAL E LIMPO DE RESPONSIVIDADE --- */
