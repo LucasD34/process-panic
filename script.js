@@ -257,6 +257,8 @@ function executarProcesso(index) {
 
     DOM.cpu.className = `ocupado ${classeCor}`;
 
+	DOM.cpu.classList.add("cpu-processando");
+
     if (p.isBoss) {
         DOM.cpu.classList.add("cpu-boss-active");
         DOM.progresso.classList.add("progresso-boss");
@@ -470,6 +472,7 @@ function resetarEstadoCPU() {
     if (DOM.progresso) DOM.progresso.style.width = "0%"; 
     if (DOM.cpu) {
         DOM.cpu.innerText = "CPU LIVRE";
+		DOM.cpu.classList.remove("cpu-processando");
         DOM.cpu.className = ""; 
     }
 }
