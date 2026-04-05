@@ -1214,16 +1214,58 @@ body.vitoria-ativa {
     }
 }
 
-/* 2. Ajuste para Celular Deitado (Paisagem) */
-@media (max-height: 450px) {
+/* 2. Ajuste para Celular Deitado (Paisagem) - HUD COMPACTO */
+@media (max-height: 450px) and (orientation: landscape) {
+    
+    /* Transformamos o HUD em uma linha única e fina no topo */
     #hud-superior {
-        display: none; 
+        display: flex !important;
+        flex-direction: row;
+        justify-content: space-around;
+        align-items: center;
+        padding: 2px 5px;
+        height: 40px; /* Bem fininho */
+        gap: 5px;
+        background: rgba(0, 0, 0, 0.8);
     }
+
+    .stats-box {
+        display: flex;
+        flex-direction: row; /* Texto e número lado a lado */
+        align-items: center;
+        gap: 5px;
+        min-height: auto;
+        padding: 2px 10px;
+        border: none;
+        background: none;
+    }
+
+    .stats-box span { font-size: 0.6rem; } /* "SCORE", "TEMPO" menores */
+    .stats-box h2 { font-size: 0.9rem; margin: 0; }
+    #proximaMeta { display: none; } /* Esconde o texto da meta para limpar visual */
+
+    /* Ajuste da área de jogo para caber abaixo do HUD mini */
     #areaJogo {
         flex-direction: row;
-		gap: 10px;
-		padding: 5px;
+        height: calc(100vh - 45px); /* Ocupa o resto da tela */
+        gap: 10px;
+        padding: 5px;
     }
-    #areaFila { max-height: 100vh; width: 45%; overflow-y: auto; }
-    #areaCPU { width: 50%; transform: scale(0.85); margin-top: -10px; }
+
+    #areaFila { 
+        width: 45%; 
+        max-height: 100%; 
+        overflow-y: auto; 
+    }
+
+    #areaCPU { 
+        width: 50%; 
+        transform: scale(0.8); 
+        margin-top: -5px; 
+    }
+
+    /* Esconde os logs como você pediu */
+    #areaStatus { 
+        display: none !important; 
+    }
 }
