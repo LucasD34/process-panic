@@ -1,0 +1,1172 @@
+﻿/* 🌌 RESET */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* 🌌 FUNDO */
+body {
+    background: radial-gradient(circle at top, #0b0f1a, #020617);
+    background-size: 200% 200%;
+    animation: bgMove 10s infinite alternate;
+}
+
+@keyframes bgMove {
+    0% { background-position: top left; }
+    100% { background-position: bottom right; }
+}
+
+
+/* 🔥 TÍTULO */
+.neon-text::before {
+    color: #ff00ff;
+    animation: glitchTop 1.5s infinite linear alternate-reverse;
+    /* O clip-path cria o efeito de faixas cortadas */
+    clip-path: inset(40% 0 61% 0); 
+    opacity: 0.8;
+}
+
+.neon-text::after {
+    color: #00ffff;
+    animation: glitchBottom 1.5s infinite linear alternate-reverse;
+    clip-path: inset(55% 0 35% 0);
+    opacity: 0.8;
+}
+
+
+@keyframes glitch {
+    0% { transform: none; }
+    20% { transform: skew(-2deg); }
+    40% { transform: skew(2deg); }
+    60% { transform: skew(-1deg); }
+    80% { transform: skew(1deg); }
+    100% { transform: none; }
+}
+
+@keyframes glitchTop {
+    0% { transform: translate(0,0); }
+    20% { transform: translate(-2px, -2px); }
+    40% { transform: translate(2px, 2px); }
+    60% { transform: translate(-1px, 1px); }
+    100% { transform: translate(0,0); }
+}
+
+@keyframes glitchBottom {
+    0% { transform: translate(0,0); }
+    20% { transform: translate(2px, 2px); }
+    40% { transform: translate(-2px, -2px); }
+    60% { transform: translate(1px, -1px); }
+    100% { transform: translate(0,0); }
+}
+
+/* HUD Superior */
+
+
+/* Organiza o HUD (Score, Tempo, Nível) em linha */
+#hud-superior {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.3);
+    border-bottom: 2px solid #00ffff;
+}
+
+
+/* --- PADRONIZAÇÃO DAS CAIXAS DE STATUS (SEM CORES DE PRIORIDADE) --- */
+.stats-box {
+    background: rgba(0, 20, 40, 0.4);
+    border-left: 3px solid #00ffcc; /* Borda padrão ciano */
+    padding: 10px 15px;
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    min-width: 120px;
+    box-shadow: inset 0 0 10px rgba(0, 255, 204, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Rótulos pequenos superiores (SCORE, TEMPO, SISTEMA, FILA) */
+.stats-box span {
+    font-size: 0.7rem;
+    font-weight: bold;
+    color: rgba(0, 255, 204, 0.7); /* Ciano suave padrão */
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 2px;
+}
+
+/* Números grandes (Valores) */
+.stats-box h2 {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 1.8rem !important;
+    margin: 0;
+    color: #fff; /* Branco padrão */
+    text-shadow: 0 0 10px rgba(0, 255, 204, 0.8); /* Brilho ciano suave */
+}
+
+/* Estilo especial para o texto da Meta (abaixo do Score) */
+#proximaMeta {
+    font-size: 0.65rem;
+    color: #888; /* Cinza discreto */
+    margin-top: 4px;
+    display: block;
+}
+
+#proximaMeta {
+    font-size: 0.65rem;
+    color: #888;
+    margin-top: 4px;
+    display: block;
+}
+
+/* Efeito de Scanline (Linhas de TV antiga) nas caixas */
+.stats-box::after {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), 
+                linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+    background-size: 100% 3px, 3px 100%;
+    pointer-events: none;
+}
+
+@keyframes pulsarNeon {
+    0% { text-shadow: 0 0 5px #00ffcc, 0 0 10px #00ffcc; }
+    50% { text-shadow: 0 0 15px #00ffcc, 0 0 30px #00ffcc; }
+    100% { text-shadow: 0 0 5px #00ffcc, 0 0 10px #00ffcc; }
+}
+
+#nivelExibicao {
+    animation: pulsarNeon 2s infinite ease-in-out;
+}
+
+/* 🎮 LAYOUT PRINCIPAL */
+
+/* Organiza a tela inteira: HUD em cima, JOGO embaixo */
+#telaJogo {
+    display: none; /* O JS mudará para flex */
+    flex-direction: column;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* ESTA É A PARTE MAIS IMPORTANTE: Separa Fila, CPU e Status em 3 colunas */
+/* Garante que o container principal não deixe nada vazar */
+#areaJogo {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start; /* Alinha no topo para os itens não "flutuarem" */
+    gap: 20px;
+    padding: 20px;
+    height: calc(100vh - 120px); /* Ajusta conforme o tamanho do seu header */
+    overflow: hidden;
+}
+
+/* --- CONTAINER DA FILA (Estilo Cyber-Painel) --- */
+#areaFila {
+    width: 320px; /* Aumentei levemente para os cards respirarem */
+    height: calc(100vh - 180px);
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 15px;
+    z-index: 10;
+    /* Fundo escuro levemente transparente */
+    background: rgba(0, 5, 10, 0.6);
+    
+    /* Borda Neon Suave */
+    border: 1px solid rgba(0, 255, 204, 0.2);
+    border-right: 3px solid rgba(0, 255, 204, 0.5); /* Borda lateral mais forte */
+    border-radius: 0 10px 10px 0;
+    
+    /* Efeito de profundidade */
+    box-shadow: inset 10px 0 20px rgba(0, 0, 0, 0.5);
+    
+    scrollbar-width: thin;
+    scrollbar-color: #00ffcc transparent;
+    
+    position: relative;
+}
+
+/* Adiciona um efeito de "grade" no fundo da fila (opcional, fica bem hacker) */
+#areaFila::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-image: linear-gradient(rgba(0, 255, 204, 0.03) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(0, 255, 204, 0.03) 1px, transparent 1px);
+    background-size: 20px 20px;
+    pointer-events: none;
+}
+
+/* --- BARRA DE ROLAGEM NEON --- */
+#areaFila::-webkit-scrollbar {
+    width: 4px; /* Mais fina para ser elegante */
+}
+
+#areaFila::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+#areaFila::-webkit-scrollbar-thumb {
+    background: #00ffcc;
+    border-radius: 10px;
+    box-shadow: 0 0 15px #00ffcc;
+}
+
+/* --- LISTA DE PROCESSOS --- */
+#fila {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px; /* Espaço uniforme entre os cards */
+    position: relative;
+    z-index: 1; /* Fica acima da grade de fundo */
+}
+
+/* --- O CARD REFORMULADO --- */
+.processo-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    padding: 15px 20px;
+    background: rgba(10, 15, 30, 0.9); /* Fundo bem escuro */
+    backdrop-filter: blur(10px);
+    border-radius: 10px;
+    border: 1px solid rgba(0, 255, 204, 0.2);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: white;
+    font-family: 'Segoe UI', Roboto, sans-serif;
+}
+
+/* --- AJUSTE NO HOVER DO CARD --- */
+/* Reduzi um pouco o movimento para não bater na borda */
+.processo-card:hover {
+    transform: scale(1.02) translateX(3px); 
+    /* scale menor e translate menor evitam estourar o container */
+}
+
+/* --- INDICADORES DE PRIORIDADE --- */
+.prioridade-baixa { 
+    border-left: 6px solid #00ffcc; 
+    box-shadow: -5px 0 10px rgba(0, 255, 204, 0.1);
+}
+.prioridade-media { 
+    border-left: 6px solid #ffff00; 
+    box-shadow: -5px 0 10px rgba(255, 255, 0, 0.1);
+}
+.prioridade-alta { 
+    border-left: 6px solid #ff0033; 
+    animation: pulseRed 2s infinite; 
+}
+
+@keyframes pulseRed {
+    0% { box-shadow: -5px 0 5px rgba(255, 0, 51, 0.2); }
+    50% { box-shadow: -10px 0 20px rgba(255, 0, 51, 0.5); }
+    100% { box-shadow: -5px 0 5px rgba(255, 0, 51, 0.2); }
+}
+
+/* Texto dentro do card */
+.processo-card strong {
+    color: #00ffff;
+    font-size: 1.1rem;
+}
+
+.processo-card span {
+    font-size: 0.85rem;
+    opacity: 0.8;
+}
+
+/* Garante que o conteúdo do card fique alinhado horizontalmente */
+.info-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.emoji-prioridade {
+    font-size: 1.8rem;
+}
+
+.tempo-badge {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-weight: bold;
+    font-family: 'Courier New', monospace;
+    color: #00ffcc;
+}
+
+.processo-card small {
+    color: #ffd700; /* Cor dourada para os pontos potenciais */
+    font-weight: bold;
+}
+
+/* --- EFEITO HOVER DINÂMICO --- */
+
+/* Hover para Baixa Prioridade (Verde/Neon) */
+.processo-card.prioridade-baixa:hover {
+    transform: scale(1.05) translateX(5px);
+    background: rgba(0, 255, 204, 0.15);
+    border-color: #00ffcc;
+    box-shadow: 0 0 20px rgba(0, 255, 204, 0.4);
+}
+
+/* Hover para Média Prioridade (Amarelo/Neon) */
+.processo-card.prioridade-media:hover {
+    transform: scale(1.05) translateX(5px);
+    background: rgba(255, 255, 0, 0.15);
+    border-color: #ffff00;
+    box-shadow: 0 0 20px rgba(255, 255, 0, 0.4);
+}
+
+/* Hover para Alta Prioridade (Vermelho/Neon) */
+.processo-card.prioridade-alta:hover {
+    transform: scale(1.05) translateX(5px);
+    background: rgba(255, 0, 51, 0.15);
+    border-color: #ff0033;
+    box-shadow: 0 0 20px rgba(255, 0, 51, 0.6);
+}
+
+/* Ajuste para o texto da prioridade dentro do card */
+.texto-prioridade {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: block;
+    margin-top: 2px;
+}
+
+/* Coluna da CPU (Centro) */
+/* Organiza o container da CPU para empilhar os filhos */
+#areaCPU {
+    flex: 1;
+    display: flex;
+    flex-direction: column; /* Empilha Barra e depois CPU */
+    justify-content: center;
+    align-items: center;
+    gap: 30px; /* Espaço real entre a barra e o card */
+    padding: 20px;
+}
+
+/* Ajuste na Barra para não ser absoluta e não sumir */
+#barra {
+    width: 100%;
+    max-width: 500px;
+    height: 40px;
+    background: rgba(0, 0, 0, 0.5);
+    border: 2px solid #00ffff;
+    border-radius: 20px;
+    position: relative; /* Mantém como relativo para o #progresso funcionar */
+    overflow: hidden;
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+}
+
+/* Ajuste no Card da CPU (Removi o position: absolute que causava o erro) */
+#cpu {
+    width: 280px;
+    min-height: 160px;
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(0, 255, 255, 0.4); 
+    border-radius: 15px;
+    
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin: 20px auto;
+    overflow: hidden;
+    padding: 20px;
+    will-change: transform, opacity;
+    
+    backface-visibility: hidden;
+
+    /* Estilo do Texto "LIVRE" */
+    color: #00ffcc;
+    font-size: 1.5rem;           /* Tamanho grande */
+    font-weight: 700;            /* Extra negrito */
+    text-transform: uppercase;   /* MAIÚSCULAS */
+    letter-spacing: 3px;         /* Espaçamento tech */
+    
+    /* Brilho Neon intenso */
+    text-shadow: 0 0 15px rgba(0, 255, 204, 0.8), 
+                 0 0 30px rgba(0, 255, 204, 0.4); 
+    
+    /* Animação e Transição */
+    animation: 
+        pulsoLivreNeon 2s infinite ease-in-out,
+        pulsarTexto 2s infinite ease-in-out;;
+    
+    transition: all 0.3s ease;
+}
+
+
+    /* 1. Defina as animações no final do arquivo */
+@keyframes pulsoLivreNeon {
+    0%, 100% { border-color: rgba(0, 255, 204, 0.3); box-shadow: 0 0 5px rgba(0, 255, 204, 0.2); }
+    50% { border-color: rgba(0, 255, 204, 0.8); box-shadow: 0 0 20px rgba(0, 255, 204, 0.5); }
+}
+
+@keyframes pulsarTexto {
+    0%, 100% { opacity: 0.7; transform: scale(1); text-shadow: 0 0 10px rgba(0, 255, 204, 0.5); }
+    50% { opacity: 1; transform: scale(1.05); text-shadow: 0 0 25px rgba(0, 255, 204, 1); }
+}
+
+#cpu strong {
+    color: inherit; /* Herda a cor da borda definida acima */
+    text-shadow: 0 0 10px currentColor;
+}
+
+/* Container do conteúdo dentro da CPU */
+.card-cpu {
+	display: flex;             /* Ativa o Flexbox para alinhar horizontalmente */
+    flex-direction: column;     /* Empilha as linhas principais (Label, ID, Pontos) */
+    align-items: center;        /* Centraliza os blocos horizontalmente */
+    gap: 5px;                    /* Pequeno espaço entre os blocos */
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid #00ffcc;
+    border-radius: 8px;
+    padding: 10px;
+    width: 90%; /* Ajusta à largura da CPU */
+    animation: pulseGlow 1.5s infinite alternate;
+}
+
+.label-cpu {
+    font-size: 0.75rem;
+    opacity: 0.7;
+    letter-spacing: 2px;
+}
+
+.id-cpu {
+	display: flex;             /* Ativa o Flexbox para o rótulo e o número ficarem lado a lado */
+    align-items: baseline;      /* Alinha a base do texto "ID:" com o número */
+    gap: 8px;                  /* Espaço entre "ID:" e o número "6108" */
+    font-size: 1.2rem;          /* REDUZA AQUI o tamanho para caber na mesma linha */
+    color: #00ffcc;            /* Mantenha sua cor ciano neon */
+    text-shadow: 0 0 10px rgba(0, 255, 204, 0.7); /* Brilho neon suave */
+    font-family: 'Courier New', Courier, monospace; /* Fonte tech */
+    text-transform: uppercase;   /* Garante que o ID fique sempre em maiúsculas */
+}
+
+/* Estilo para a pontuação dentro da CPU */
+.pontuacao-cpu {
+    font-size: 1.2rem;
+    color: #ffd700; /* Dourado */
+    font-weight: bold;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+    margin-top: 5px;
+    letter-spacing: 1px;
+}
+
+.label-cpu {
+    font-size: 0.7rem;
+    opacity: 0.7;
+    letter-spacing: 2px;
+}
+
+/* Animação para o card "pulsar" enquanto processa */
+@keyframes pulseRed {
+    from { box-shadow: 0 0 5px rgba(0, 255, 204, 0.2); }
+    to { box-shadow: 0 0 15px rgba(0, 255, 204, 0.5); }
+}
+
+
+
+/* Remove o fundo rosa fixo que estava na classe .ocupado */
+#cpu.ocupado {
+    /* 1. Mantém apenas a animação de entrada do processo */
+    animation: cpuReceber 0.4s ease-out; 
+    
+    /* 2. Reseta os estilos exagerados do estado 'Livre' */
+    font-size: 1rem; 
+    letter-spacing: normal;
+    text-shadow: none;
+    text-transform: none; /* Caso queira que o ID não fique gigante */
+    font-weight: normal;
+}
+
+/* Estado CPU - Processo Baixo (Verde) */
+#cpu.prio-baixa {
+    background: rgba(0, 255, 204, 0.1);
+    border: 2px solid #00ffcc;
+    box-shadow: 0 0 20px rgba(0, 255, 204, 0.4);
+    color: #00ffcc;
+}
+
+/* Estado CPU - Processo Médio (Amarelo) */
+#cpu.prio-media {
+    background: rgba(255, 255, 0, 0.1);
+    border: 2px solid #ffff00;
+    box-shadow: 0 0 20px rgba(255, 255, 0, 0.4);
+    color: #ffff00;
+}
+
+/* Estado CPU - Processo Alto/Crítico (Vermelho) */
+#cpu.prio-alta {
+    background: rgba(255, 0, 51, 0.15);
+    border: 2px solid #ff0033;
+    box-shadow: 0 0 25px rgba(255, 0, 51, 0.6);
+    color: #ff0033;
+}
+
+
+/* Garante que o item da fila tenha espaço para animar */
+
+
+#progresso {
+    width: 0%; /* Começa em 0 */
+    height: 100%;
+    background: linear-gradient(90deg, #00ffcc, #0088ff);
+    box-shadow: 0 0 20px #00ffcc;
+    transition: width 0.1s linear; /* Adicione esta linha para suavizar */
+}
+
+/* Logs (Direita) */
+
+/* Coluna de Status/Logs (Direita) */
+
+#areaStatus {
+    width: 25%;
+    min-width: 200px;
+    border-left: 1px solid rgba(0, 255, 255, 0.2);
+}
+
+
+#listaLogs {
+    height: 100%;
+    min-height: 300px; /* Garante um tamanho mínimo visível */
+    overflow-y: auto;
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    background: rgba(0, 0, 0, 0.5); /* Fundo um pouco mais escuro */
+    padding: 15px;
+    border-radius: 10px;
+    border: 1px solid rgba(0, 255, 204, 0.2); /* Borda neon suave */
+    color: #eee;
+}
+
+/* 💀 OVERLAY */
+
+/* Garante que o container do Game Over também tenha z-index correto */
+#overlayGameOver .glass-container {
+    z-index: 10001; /* Levemente maior que o overlay pai */
+}
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.85);
+    display: none;
+    justify-content: center;
+    align-items: center;
+	z-index: 10000;
+}
+
+.gameover-card {
+    background: #111;
+    padding: 30px;
+    border-radius: 15px;
+    text-align: center;
+
+    box-shadow: 0 0 20px #ff0033;
+    animation: tremer 0.3s;
+}
+
+.gameover-card h2 {
+    color: #ff0033;
+    text-shadow: 0 0 10px #ff0033;
+}
+
+@keyframes tremer {
+    0% { transform: translate(0); }
+    20% { transform: translate(-5px, 5px); }
+    40% { transform: translate(5px, -5px); }
+    60% { transform: translate(-3px, 3px); }
+    80% { transform: translate(3px, -3px); }
+    100% { transform: translate(0); }
+}
+
+/* 💥 ANIMAÇÃO CPU */
+@keyframes pulse {
+    0% { opacity: 0.6; }
+    50% { opacity: 1; }
+    100% { opacity: 0.6; }
+}
+
+
+/* 📱 RESPONSIVO */
+@media (max-width: 768px) {
+    #areaJogo {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    #areaFila, #areaStatus {
+        width: 100%;
+    }
+}
+
+.particula {
+    position: fixed;
+    width: 6px;
+    height: 6px;
+    background: #00ffcc;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 1000;
+}
+
+/* Estilo das partículas do rastro */
+.rastro-particula {
+    position: fixed;
+    width: 8px;
+    height: 8px;
+    background: #4ade80; /* Mesma cor do card */
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9998; /* Um pouco atrás do card principal */
+    filter: blur(2px);
+    box-shadow: 0 0 8px #4ade80;
+}
+
+/* 🧊 TELA INICIAL */
+/* --- CENTRALIZAÇÃO E AJUSTE DE TAMANHO --- */
+#telaInicio .glass-container-menu {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centraliza tudo horizontalmente */
+    text-align: center;
+    max-width: 450px; /* Largura ideal das barras */
+    width: 95%;
+    margin: auto;
+}
+
+.inicio-box {
+    text-align: center;
+    width: 400px;
+    padding: 30px;
+
+    background: rgba(255,255,255,0.05);
+    backdrop-filter: blur(12px);
+
+    border-radius: 15px;
+    box-shadow: 0 0 25px rgba(0,0,0,0.6);
+}
+
+.subtitulo {
+    color: #aaa;
+    margin-bottom: 20px;
+}
+
+.ranking {
+    margin-top: 20px;
+    font-size: 14px;
+}
+
+/* 🔥 ANIMAÇÃO TÍTULO */
+@keyframes glowIn {
+    0% {
+        opacity: 0;
+        transform: translateY(-20px);
+        text-shadow: none;
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+        text-shadow: 0 0 10px #00ffcc, 0 0 25px #00ffcc;
+    }
+}
+
+
+/* 🎮 ENTRADA BOTÕES */
+
+button {
+    background: linear-gradient(135deg, #00ffcc, #00ccaa);
+    border: none;
+    padding: 12px 25px;
+    margin: 10px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.2s;
+
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeUp 0.5s ease forwards;
+}
+
+/* animação separada */
+.inicio-box button:nth-of-type(1) {
+    animation-delay: 0.5s;
+}
+
+.inicio-box button:nth-of-type(2) {
+    animation-delay: 0.8s;
+}
+
+@keyframes fadeUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.neon-text {
+    position: relative;
+    color: #00ffcc;
+    font-size: 2rem;
+	margin-bottom: 10px;
+    text-shadow: 0 0 10px #00ffcc, 0 0 25px #00ffcc;
+
+    animation: glitch 1s infinite, glowIn 1s ease-out;
+}
+
+#bootText {
+    margin-bottom: 15px;
+}
+
+@keyframes screenGlitch {
+    0% { transform: translate(0); }
+    20% { transform: translate(-5px, 5px); }
+    40% { transform: translate(5px, -5px); }
+    60% { transform: translate(-3px, 3px); }
+    80% { transform: translate(3px, -3px); }
+    100% { transform: translate(0); }
+}
+
+#bootText {
+    font-size: 14px;
+    color: #00ffcc;
+    opacity: 0.8;
+    margin: 10px 0;
+}
+
+/* --- 🏆 ESTILIZAÇÃO DO RANKING (CORREÇÃO DEFINITIVA) --- */
+
+#rankingLista {
+    width: 100%;
+    padding: 0;
+    margin-top: 15px;
+    list-style: none;
+}
+
+#rankingLista li {
+	font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 12px 15px;
+    margin-bottom: 8px;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.75); 
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+    font-family: 'Segoe UI', Roboto, sans-serif;
+    text-transform: uppercase;
+    position: relative; /* Necessário para a coroa */
+}
+
+/* --- CORES E PULSAR (TOP 3) --- */
+
+.rank-1 { 
+    color: #ffd700 !important; 
+    border-color: rgba(255, 215, 0, 0.5) !important;
+    animation: entradaRanking 0.5s ease forwards, pulsarRanking 1.5s infinite alternate !important;
+}
+
+.rank-2 { 
+    color: #ffffff !important; 
+    border-color: rgba(255, 255, 255, 0.3) !important;
+    animation: entradaRanking 0.5s ease forwards 0.1s, pulsarRanking 1.5s infinite alternate !important;
+}
+
+.rank-3 { 
+    color: #ff9d5c !important; 
+    border-color: rgba(255, 157, 92, 0.3) !important;
+    animation: entradaRanking 0.5s ease forwards 0.2s, pulsarRanking 1.5s infinite alternate !important;
+}
+
+/* --- CORREÇÃO DAS CORES 4º E 5º --- */
+
+.rank-4 { 
+    color: #00ffcc !important; 
+}
+
+.rank-5 { 
+    color: #00aaff !important; 
+}
+
+/* Garante que o nome e a posição brilhem com a cor acima */
+.rank-4 .rank-name, .rank-4 .rank-pos,
+.rank-5 .rank-name, .rank-5 .rank-pos {
+    color: inherit !important;
+    text-shadow: 0 0 10px currentColor;
+}
+
+/* --- ELEMENTOS INTERNOS (HERDANÇA DE COR) --- */
+.rank-pos, .rank-name { 
+    color: inherit !important; 
+    text-shadow: 0 0 10px currentColor;
+}
+
+.rank-pos { width: 30px; font-family: 'Courier New', monospace; font-weight: bold; font-size: 1.2rem; }
+.rank-name { flex-grow: 1; text-align: left; font-weight: bold; letter-spacing: 1px; }
+.rank-score { font-family: 'Courier New', monospace; font-weight: bold; color: #fff !important; }
+
+/* --- 🥇 A COROA (AJUSTADA) --- */
+/* Usamos ::before no li para ela ficar por cima de tudo sem ocupar espaço no flex */
+.rank-1::before {
+    content: "👑";
+    position: absolute;
+    right: 15px; /* Alinhada com o score */
+    top: -15px;  /* Flutuando acima da linha */
+    font-size: 1.3rem;
+    animation: crownFloat 1s infinite alternate;
+    z-index: 10;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+}
+
+/* --- ANIMAÇÕES --- */
+
+@keyframes pulsarRanking {
+    0% { box-shadow: 0 0 5px currentColor; }
+    100% { box-shadow: 0 0 15px currentColor; }
+}
+
+@keyframes crownFloat {
+    from { transform: translateY(0) rotate(-5deg); }
+    to { transform: translateY(-5px) rotate(5deg); }
+}
+
+@keyframes entradaRanking {
+    from { opacity: 0; transform: translateX(-20px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+/* HOVER */
+#rankingLista li:hover {
+    transform: scale(1.03) !important;
+    background: rgba(255, 255, 255, 0.1) !important;
+    border-color: currentColor !important;
+    cursor: pointer;
+}
+
+
+/* TÍTULO "TOP PLAYERS" */
+.ranking h3 {
+    color: #00ffcc;
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    text-shadow: 0 0 10px #00ffcc;
+    margin-bottom: 5px;
+    animation: pulseText 2s infinite alternate;
+}
+
+@keyframes pulseText {
+    0% { opacity: 0.8; }
+    100% { opacity: 1; text-shadow: 0 0 15px #00ffcc; }
+}
+
+.btn-start {
+    width: 100%;
+    padding: 10px; /* Botões mais compactos */
+    margin: 5px 0;
+    font-size: 0.85rem;
+}
+
+/* hover */
+.btn-start:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 25px #00ffcc;
+}
+
+/* clique */
+.btn-start:active {
+    transform: scale(0.95);
+}
+
+#telaInicio, #telaJogo {
+    transition: opacity 0.3s;
+}
+
+#score {
+    font-size: 28px;
+    color: #00ffcc;
+    text-shadow: 0 0 10px #00ffcc;
+}
+
+.particula, .animando {
+    pointer-events: none; /* Evita que o card animado atrapalhe cliques */
+}
+
+/* O clone que será criado pelo JS */
+.animando {
+    position: fixed;
+    z-index: 9999;
+    pointer-events: none; /* Não atrapalha cliques */
+    transition: all 1.0s cubic-bezier(0.5, 0, 0.2, 1);
+    list-style: none;
+    background: #4ade80; /* Cor de destaque durante o voo */
+    border-radius: 8px;
+    box-shadow: 0 0 25px rgba(74, 222, 128, 0.7);
+	z-index: 999;
+}
+
+.texto-pontos {
+    color: #ffd700; /* Dourado */
+    font-weight: bold;
+    text-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
+}
+
+/* --- CARD DE NOVO NÍVEL --- */
+.level-card {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    animation: fadeIn 0.3s ease;
+}
+/*CARDS NÍVEIS*/
+.level-card .glass-container {
+    text-align: center;
+    padding: 40px;
+    max-width: 400px;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* --- ESTILO DO CARD BOSS NA FILA --- */
+.processo-card.boss {
+    border: 2px solid #ff0055 !important;
+    box-shadow: 0 0 15px #ff0055, inset 0 0 10px #ff0055 !important;
+    background: linear-gradient(-45deg, #2a0010, #000000, #4a001a, #000000) !important;
+    background-size: 400% 400% !important;
+    
+    /* Chamando as duas animações: tremor e o fundo deslizando */
+    animation: gradientShift 3s ease infinite, tremor 0.15s infinite ease-in-out !important;
+    
+    transform: scale(1.05); /* Um pouco maior na fila */
+    z-index: 10;
+}
+
+/* Animação do fundo deslizando */
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Animação de tremor corrigida */
+@keyframes tremor {
+    0% { transform: scale(1.05) translate(1px, 1px); }
+    25% { transform: scale(1.05) translate(-1px, -1px); }
+    50% { transform: scale(1.05) translate(1px, -1px); }
+    100% { transform: scale(1.05) translate(-1px, 1px); }
+}
+
+/* Garante que o placar final brilhe */
+#pontuacaoFinalDisplay {
+    color: #ffd700;
+    font-size: 2.5rem;
+    text-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+}
+
+/* Melhora a visibilidade do campo de nome */
+#nomeJogador {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid #00ffcc;
+    color: white; /* Texto que o jogador digita fica branco */
+    padding: 10px;
+    border-radius: 5px;
+    outline: none;
+    text-align: center;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+#nomeJogador::placeholder {
+    color: rgba(255, 255, 255, 0.4); /* Texto de exemplo (Dê seu nome) */
+}
+
+/* --- 📖 AJUSTE DO MANUAL (MODAL) --- */
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* Fundo escuro atrás do modal para isolar a visão */
+    background: rgba(0, 0, 0, 0.85); 
+    display: none; /* Controlado pelo JS */
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+    backdrop-filter: blur(8px); /* Desfoca o que está atrás */
+}
+
+#modalManual .glass-container {
+    background: rgba(15, 20, 30, 0.95); /* Quase opaco para leitura */
+    border: 2px solid #00ffcc;
+    max-width: 600px;
+    width: 90%;
+    max-height: 85vh;
+    overflow-y: auto; /* Scroll se o texto for grande */
+    padding: 30px;
+    box-shadow: 0 0 50px rgba(0, 255, 204, 0.2);
+}
+
+/* --- TEXTOS DENTRO DO MANUAL --- */
+
+#tutorialConteudo {
+    color: #e0e0e0;
+    line-height: 1.6;
+    font-size: 1rem;
+    text-align: left;
+}
+
+/* Títulos de seções dentro do manual */
+#tutorialConteudo h3 {
+    color: #00ffcc;
+    margin: 20px 0 10px 0;
+    text-transform: uppercase;
+    font-weight: 900;
+    border-bottom: 1px solid rgba(0, 255, 204, 0.3);
+}
+
+/* Caixas de dicas (Modo Normal / Desafio) */
+.modo-info-normal, .modo-info-desafio {
+    padding: 15px;
+    border-radius: 8px;
+    margin: 15px 0;
+    font-weight: 600;
+}
+
+.modo-info-normal {
+    background: rgba(0, 255, 204, 0.15);
+    border: 1px solid #00ffcc;
+    color: #ffffff; /* Texto branco para contraste */
+}
+
+.modo-info-desafio {
+    background: rgba(255, 0, 85, 0.15);
+    border: 1px solid #ff0055;
+    color: #ffffff;
+}
+
+/* Lista de instruções */
+#tutorialConteudo p {
+    background: rgba(255, 255, 255, 0.07);
+    margin-bottom: 10px;
+    padding: 12px;
+    border-radius: 6px;
+    border-left: 4px solid #00ffcc;
+    font-weight: 500;
+}
+
+/* Destaque em negrito dentro do texto */
+#tutorialConteudo strong {
+    color: #00ffcc;
+    font-weight: 900;
+}
+
+/* --- 🏆 EFEITOS VISUAIS DE VITÓRIA TOTAL --- */
+
+/* 1. O Grande Brilho Dourado no Fundo */
+body.vitoria-ativa {
+    /* Cria um fundo dourado pulsante que sobrepõe o fundo escuro original */
+    background: radial-gradient(circle, #ffd700 0%, #b8860b 40%, #020617 90%) !important;
+    animation: goldPulseBg 3s infinite alternate !important;
+    transition: background 1s ease;
+    overflow: hidden; /* Impede barras de rolagem indesejadas */
+}
+
+/* 2. Efeito de Texto Neon Dourado e Iridescente para o Título */
+.vitoria-ativa #overlayGameOver h2 {
+    color: #fff !important;
+    text-shadow: 
+        0 0 10px #fff,
+        0 0 20px #ffd700,
+        0 0 30px #ffd700,
+        0 0 40px #ff8c00,
+        0 0 70px #ff8c00 !important;
+    animation: rainbowText 4s infinite linear, victoryScale 1.5s ease-out !important;
+    font-size: 4rem !important; /* Aumenta o tamanho do título */
+    text-transform: uppercase;
+    letter-spacing: 5px;
+}
+
+/* 3. Efeito de Brilho nos Elementos da Interface */
+.vitoria-ativa .glass-container {
+    border-color: #ffd700 !important;
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.5) !important;
+}
+
+/* --- 🎬 ANIMAÇÕES --- */
+
+/* Pulsação do fundo dourado */
+@keyframes goldPulseBg {
+    0% { filter: brightness(1) contrast(1); }
+    100% { filter: brightness(1.3) contrast(1.1); }
+}
+
+/* Texto mudando levemente de cor (efeito arco-íris dourado) */
+@keyframes rainbowText {
+    0%, 100% { filter: hue-rotate(0deg); }
+    50% { filter: hue-rotate(15deg); } /* Pequena variação para manter o dourado */
+}
+
+/* Escala inicial do título (ele "explode" na tela) */
+@keyframes victoryScale {
+    0% { transform: scale(0.5); opacity: 0; }
+    60% { transform: scale(1.1); opacity: 1; }
+    100% { transform: scale(1); }
+}
+
+/* Ajustes para ecrãs de telemóvel (até 768px) */
+@media (max-width: 768px) {
+    #areaJogo {
+        flex-direction: column; /* Empilha a fila, CPU e logs verticalmente */
+        align-items: center;
+    }
+
+    #areaFila, #areaCPU, #areaStatus {
+        width: 95%; /* Ocupa quase a largura toda do telemóvel */
+        margin-bottom: 15px;
+    }
+
+    /* Ajusta o título da vitória para não estourar no telemóvel */
+    .vitoria-ativa #overlayGameOver h2 {
+        font-size: 2.2rem !important; 
+        letter-spacing: 2px;
+    }
+
+    .glass-container {
+        width: 90%;
+        padding: 15px;
+    }
+}

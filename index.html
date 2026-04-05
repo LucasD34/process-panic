@@ -1,0 +1,100 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PROCESS PANIC 5.6 BOSS</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="telaInicio">
+    <div class="glass-container-menu">
+        <h1 class="neon-text">PROCESS PANIC</h1>
+        <p id="bootText">Inicializando sistema...</p>
+        
+        <button class="btn-start" onclick="iniciarTudo('normal')">▶ INICIAR SISTEMA</button>
+        <button class="btn-start" onclick="iniciarTudo('desafio')">⚡ MODO DESAFIO</button>
+        <button class="btn-start" onclick="abrirTutorial()">📖 MANUAL DO SISTEMA</button>
+
+        <h3 style="color: #00ffcc; margin-top: 20px;">🏆 TOP PLAYERS</h3>
+        <ul id="rankingLista">
+            </ul>
+    </div>
+</div>
+
+<div id="modalManual" class="modal-overlay">
+    <div class="glass-container" style="max-width: 500px;">
+        <h2 id="tutorialTitulo" class="neon-text" style="text-align: center;"></h2>
+        <div id="tutorialConteudo">
+            </div>
+        <button class="btn-start" style="margin-top: 20px; width: 100%;" onclick="fecharTutorial()">ENTENDIDO!</button>
+    </div>
+</div>
+
+<div id="telaJogo" style="display:none;">
+<header id="hud-superior">
+
+    <div class="stats-box">
+        <span>SCORE</span>
+        <h2 id="score">0</h2>
+        <small id="proximaMeta">PRÓXIMA META: 500</small>
+    </div>
+
+    <div class="stats-box">
+        <span>TEMPO</span>
+        <h2 id="tempo">60</h2>
+    </div>
+
+    <div class="stats-box">
+        <span>SISTEMA</span>
+        <h2 id="nivelExibicao">NÍVEL 1</h2>
+    </div>
+
+    <div class="stats-box">
+        <span>FILA</span>
+        <h2 id="infoFilaLimite">0 / 10</h2>
+    </div>
+
+</header>
+
+<main id="areaJogo">
+
+    <aside id="areaFila">
+        <ul id="fila"></ul>
+    </aside>
+
+    <section id="areaCPU">
+        <div id="cpu">CPU LIVRE</div>
+        <div id="barra">
+            <div id="progresso"></div>
+        </div>
+    </section>
+
+    <section id="areaStatus">
+        <div id="listaLogs"></div>
+    </section>
+
+</main>
+
+</div>
+
+<div id="overlayGameOver" class="overlay">
+    <div class="glass-container">
+        <h2 class="neon-text">GAME OVER ☠︎</h2>
+        <p class="subtitulo">SISTEMA CORROMPIDO</p>
+        
+        <p style="color: white; margin: 15px 0; font-size: 1.2rem;">
+            PONTUAÇÃO FINAL: <strong id="pontuacaoFinalDisplay" style="color: #00ffcc;">0</strong>
+        </p>
+
+        <input type="text" id="nomeJogador" placeholder="SEU NOME" maxlength="15">
+        <button class="btn-start" onclick="salvarPontuacao()">💾 SALVAR SCORE</button>
+        <button class="btn-start" onclick="reiniciarJogo()">🔄 REPETIR</button>
+        <button class="btn-start" onclick="voltarMenu()">🏠 MENU</button>
+    </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
