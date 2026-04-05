@@ -1147,95 +1147,82 @@ body.vitoria-ativa {
     100% { transform: scale(1); }
 }
 
-/* Ajustes para ecrãs de telemóvel (até 768px) */
+/* --- 📱 AJUSTE FINAL E LIMPO DE RESPONSIVIDADE --- */
+
+/* 1. Celulares em Geral (Vertical) */
 @media (max-width: 768px) {
-    #areaJogo {
-        flex-direction: column; /* Empilha a fila, CPU e logs verticalmente */
-        align-items: center;
-    }
-
-    #areaFila, #areaCPU, #areaStatus {
-        width: 95%; /* Ocupa quase a largura toda do telemóvel */
-        margin-bottom: 15px;
-    }
-
-    /* Ajusta o título da vitória para não estourar no telemóvel */
-    .vitoria-ativa #overlayGameOver h2 {
-        font-size: 2.2rem !important; 
-        letter-spacing: 2px;
-    }
-
-    .glass-container {
-        width: 90%;
-        padding: 15px;
-    }
-}
-
-/* --- 📱 AJUSTES PARA CELULAR (RESPONSIVIDADE) --- */
-
-@media (max-width: 768px) {
-    /* 1. Empilha os elementos do HUD (Score, Tempo, etc) para não apertar */
+    /* Topo com os status em 2 colunas */
     #hud-superior {
-        flex-wrap: wrap;
-        gap: 5px;
-        padding: 5px;
+        display: grid;
+        grid-template-columns: 1fr 1fr; 
+        gap: 8px;
+        padding: 10px;
+        height: auto;
     }
 
     .stats-box {
-        flex: 1 1 40%; /* Faz cada caixa ocupar metade da largura */
-        padding: 5px;
+        padding: 8px;
+        min-height: 60px;
     }
 
     .stats-box h2 {
-        font-size: 1.2rem;
+        font-size: 1.1rem;
     }
 
-    /* 2. Muda o jogo de LADO A LADO para UM EM CIMA DO OUTRO */
+    /* Área do Jogo empilhada */
     #areaJogo {
         flex-direction: column;
-        overflow-y: auto; /* Permite rolar se a tela for muito baixa */
+        justify-content: flex-start;
+        padding: 10px;
+        gap: 15px;
+        overflow-y: auto;
     }
 
+    /* Fila com tamanho controlado para não empurrar a CPU */
     #areaFila {
         width: 100%;
-        max-height: 200px; /* Limita a altura da fila no celular */
+        max-height: 250px; 
         overflow-y: auto;
+        background: rgba(0, 0, 0, 0.2);
     }
 
     #areaCPU {
         width: 100%;
-        margin: 10px 0;
+        min-height: 180px;
+        margin: 0;
     }
 
+    /* Logs menores */
     #areaStatus {
         width: 100%;
-        height: 100px; /* Diminui o log para sobrar espaço */
+        height: 100px;
     }
 
-    /* 3. Ajusta o tamanho dos textos de Vitória/Game Over */
+    /* Telas de Game Over / Vitória */
     .vitoria-ativa #overlayGameOver h2 {
-        font-size: 2rem !important; /* Diminui o título 4rem que estourava */
-        letter-spacing: 2px;
+        font-size: 1.8rem !important;
+        letter-spacing: 1px;
     }
 
     .glass-container {
         width: 95%;
-        padding: 15px;
+        padding: 20px;
     }
 
-    /* 4. Ajusta o tamanho dos cards na fila */
-    .processo-card {
-        padding: 8px;
+    .btn-start {
+        padding: 12px;
         font-size: 0.9rem;
     }
 }
 
-/* Ajuste extra para celulares muito baixos ou em modo paisagem */
-@media (max-height: 500px) {
+/* 2. Ajuste para Celular Deitado (Paisagem) */
+@media (max-height: 450px) {
     #hud-superior {
-        display: none; /* Esconde o HUD para sobrar espaço para o jogo em paisagem */
+        display: none; 
     }
-    #areaCPU {
-        transform: scale(0.8); /* Diminui a CPU para caber */
+    #areaJogo {
+        flex-direction: row; 
     }
+    #areaFila { max-height: 100%; width: 40%; }
+    #areaCPU { width: 55%; transform: scale(0.8); }
 }
